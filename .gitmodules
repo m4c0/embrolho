@@ -1,0 +1,3 @@
+[submodule "MBROLA"]
+	path = MBROLA
+	url = https://github.com/numediart/MBROLA.git
