@@ -1,0 +1,65 @@
+#pragma leco tool
+#pragma leco add_impl api
+#include <stdio.h>
+
+struct db;
+struct fifo;
+struct input;
+struct mbrola;
+struct parser;
+
+extern "C" {
+  db * embrolho_init_db();
+  fifo * embrolho_init_fifo();
+  input * embrolho_init_input(fifo *);
+  parser * embrolho_init_parserinput(input *, db *);
+  mbrola * embrolho_init_mbrola(parser *, db *);
+
+  void embrolho_close_mbrola(mbrola *);
+  void embrolho_close_parser(parser *);
+  void embrolho_close_input(input *);
+  void embrolho_close_fifo(fifo *);
+  void embrolho_close_database(db *);
+
+  int embrolho_write_fifo(fifo *, const char *);
+  int embrolho_read_mbrola(mbrola *, short * buf, int n);
+
+  const char * embrolho_errbuffer();
+}
+
+int main(int argc, char ** argv) {
+  auto dba = embrolho_init_db();
+  if (!dba) return 1;
+
+  auto fifo = embrolho_init_fifo();
+  auto input = embrolho_init_input(fifo);
+  auto parser = embrolho_init_parserinput(input, dba);
+  auto brola = embrolho_init_mbrola(parser, dba);
+
+  if (embrolho_write_fifo(fifo, "_   51 \n") < 0) return 2;
+  if (embrolho_write_fifo(fifo, "p   62 \n") < 0) return 2;
+  if (embrolho_write_fifo(fifo, "aU 127 \n") < 0) return 2;
+  if (embrolho_write_fifo(fifo, "@  110 \n") < 0) return 2;
+  if (embrolho_write_fifo(fifo, "_    9 \n") < 0) return 2;
+  if (embrolho_write_fifo(fifo, "#      \n") < 0) return 2;
+
+  FILE * output = fopen("out/res.ulaw", "wb");
+  short buffer[16000];
+  int i;
+  while ((i = embrolho_read_mbrola(brola, buffer, 16000)) == 16000)
+    fwrite(buffer, 2, i, output);
+
+  if (i < 0) {
+    fprintf(stderr, "error: %s\n", embrolho_errbuffer());
+    return 3;
+  }
+  if (i != 0) fwrite(buffer, 2, i, output);
+  fclose(output);
+
+  embrolho_close_mbrola(brola);
+  embrolho_close_parser(parser);
+  embrolho_close_input(input);
+  embrolho_close_fifo(fifo);
+  embrolho_close_database(dba);
+  return 0;
+}
