@@ -58,9 +58,9 @@ int main(int argc, char ** argv) {
     auto i = embrolho_read_mbrola(brola, buffer, smps);
     if (i < 0) putln("error: %s\n", embrolho_errbuffer());
     if (i <= 0) playing = false;
-    else for (auto x = 0; x < smps; x++) {
+    else for (auto x = 0; x < i; x++) {
       float s = buffer[x];
-      data[x] = x > i ? 0 : s / ((2 << 16) - 1);
+      data[x] = s / ((2 << 16) - 1);
     }
   });
 
