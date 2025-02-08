@@ -49,7 +49,7 @@ int main(int argc, char ** argv) {
 
   bool playing = true;
 
-  siaudio::rate(44100 / 4);
+  siaudio::rate(16000);
   siaudio::filler([&](auto data, auto smps) {
     short buffer[16000];
     auto i = embrolho_read_mbrola(brola, buffer, smps);
