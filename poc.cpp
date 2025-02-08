@@ -3,39 +3,10 @@
 import print;
 import siaudio;
 
-struct db;
-struct fifo;
-struct input;
-struct mbrola;
-struct parser;
+import embrolho;
 
-extern "C" {
-  db * embrolho_init_db();
-  fifo * embrolho_init_fifo();
-  input * embrolho_init_input(fifo *);
-  parser * embrolho_init_parserinput(input *, db *);
-  mbrola * embrolho_init_mbrola(parser *, db *);
-
-  void embrolho_close_mbrola(mbrola *);
-  void embrolho_close_parser(parser *);
-  void embrolho_close_input(input *);
-  void embrolho_close_fifo(fifo *);
-  void embrolho_close_database(db *);
-
-  int embrolho_write_fifo(fifo *, const char *);
-  int embrolho_read_mbrola(mbrola *, short * buf, int n);
-
-  const char * embrolho_errbuffer();
-}
-
-int main(int argc, char ** argv) {
-  auto dba = embrolho_init_db();
-  if (!dba) return 1;
-
-  auto fifo = embrolho_init_fifo();
-  auto input = embrolho_init_input(fifo);
-  auto parser = embrolho_init_parserinput(input, dba);
-  auto brola = embrolho_init_mbrola(parser, dba);
+int main(int argc, char ** argv) try {
+  embrolho::t emb {};
 
   // These are five reasons
   // ARPA:  DH IY Z . AA R . F AY V . R IY Z AH N Z .
@@ -62,7 +33,7 @@ z  30
 _  30
 #
   )";
-  if (embrolho_write_fifo(fifo, pho) < 0) return 2;
+  emb.write_pho(pho);
 
   bool playing = true;
 
@@ -72,9 +43,8 @@ _  30
     if (!playing) return;
 
     short buffer[16000];
-    auto i = embrolho_read_mbrola(brola, buffer, smps);
-    if (i < 0) putln("error: %s\n", embrolho_errbuffer());
-    if (i <= 0) playing = false;
+    auto i = emb.read(buffer, smps);
+    if (i == 0) playing = false;
     else for (auto x = 0; x < i; x++) {
       float s = buffer[x];
       data[x] = s / ((2 << 16) - 1);
@@ -83,10 +53,7 @@ _  30
 
   while (playing);
 
-  embrolho_close_mbrola(brola);
-  embrolho_close_parser(parser);
-  embrolho_close_input(input);
-  embrolho_close_fifo(fifo);
-  embrolho_close_database(dba);
   return 0;
+} catch (...) {
+  return 1;
 }
