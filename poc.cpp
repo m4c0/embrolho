@@ -51,6 +51,9 @@ int main(int argc, char ** argv) {
 
   siaudio::rate(16000);
   siaudio::filler([&](auto data, auto smps) {
+    for (auto x = 0; x < smps; x++) data[x] = 0;
+    if (!playing) return;
+
     short buffer[16000];
     auto i = embrolho_read_mbrola(brola, buffer, smps);
     if (i < 0) putln("error: %s\n", embrolho_errbuffer());
