@@ -37,36 +37,30 @@ int main(int argc, char ** argv) {
   auto parser = embrolho_init_parserinput(input, dba);
   auto brola = embrolho_init_mbrola(parser, dba);
 
+  // These are five reasons
+  // ARPA:  DH IY Z . AA R . F AY V . R IY Z AH N Z .
+  // SAMPA: D i: z _ A: r _ f aI v _ r i: z V n z _
   constexpr const auto pho = R"(
-_  210
-t  40
-U  55 0 173 75 173
-b  80 10 160
-i: 198 5 173 75 235
-Q  63 25 137
-r  33 10 121
-n  138 15 121 75 114
-Q  131 25 114 55 129
-t  80
-t  60
-U  50 60 181 80 166
-b  80 25 137 65 125
-i: 230 30 129 70 117
-_  250
-D  70
-{  100 15 160 35 153
-t  130
-s  80 25 111
-D  50
-@  50 40 111 80 105
-k  60
-w  50
-e  80 25 105 65 102
-s  70
-tS 70
-@  60
-n  90
-_  270 95 102 100 133 
+_  30
+D  30
+i: 50
+z  30
+_  30
+A: 50
+r  30
+_  30
+f  30
+aI 50
+v  30
+_  30
+r  30
+i: 50
+z  30
+V  30
+n  30
+z  30
+_  30
+#
   )";
   if (embrolho_write_fifo(fifo, pho) < 0) return 2;
 
