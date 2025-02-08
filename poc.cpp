@@ -1,6 +1,7 @@
 #pragma leco tool
 #pragma leco add_impl api
-#include <stdio.h>
+import print;
+import siaudio;
 
 struct db;
 struct fifo;
@@ -43,18 +44,21 @@ int main(int argc, char ** argv) {
   if (embrolho_write_fifo(fifo, "_    9 \n") < 0) return 2;
   if (embrolho_write_fifo(fifo, "#      \n") < 0) return 2;
 
-  FILE * output = fopen("out/res.ulaw", "wb");
-  short buffer[16000];
-  int i;
-  while ((i = embrolho_read_mbrola(brola, buffer, 16000)) == 16000)
-    fwrite(buffer, 2, i, output);
+  bool playing = true;
 
-  if (i < 0) {
-    fprintf(stderr, "error: %s\n", embrolho_errbuffer());
-    return 3;
-  }
-  if (i != 0) fwrite(buffer, 2, i, output);
-  fclose(output);
+  siaudio::rate(44100);
+  siaudio::filler([&](auto data, auto smps) {
+    short buffer[16000];
+    auto i = embrolho_read_mbrola(brola, buffer, smps);
+    if (i < 0) putln("error: %s\n", embrolho_errbuffer());
+    if (i <= 0) playing = false;
+    else for (auto x = 0; x < smps; x++) {
+      float s = buffer[x];
+      data[x] = x > i ? 0 : s / ((2 << 16) - 1);
+    }
+  });
+
+  while (playing);
 
   embrolho_close_mbrola(brola);
   embrolho_close_parser(parser);
