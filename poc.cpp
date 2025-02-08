@@ -37,16 +37,19 @@ int main(int argc, char ** argv) {
   auto parser = embrolho_init_parserinput(input, dba);
   auto brola = embrolho_init_mbrola(parser, dba);
 
-  if (embrolho_write_fifo(fifo, "_   51 \n") < 0) return 2;
-  if (embrolho_write_fifo(fifo, "p   62 \n") < 0) return 2;
-  if (embrolho_write_fifo(fifo, "aU 127 \n") < 0) return 2;
-  if (embrolho_write_fifo(fifo, "@  110 \n") < 0) return 2;
-  if (embrolho_write_fifo(fifo, "_    9 \n") < 0) return 2;
-  if (embrolho_write_fifo(fifo, "#      \n") < 0) return 2;
+  constexpr const auto pho = R"(
+    _   51
+    p   62
+    aU 127
+    @  110
+    _    9
+    #
+  )";
+  if (embrolho_write_fifo(fifo, pho) < 0) return 2;
 
   bool playing = true;
 
-  siaudio::rate(44100);
+  siaudio::rate(44100 / 4);
   siaudio::filler([&](auto data, auto smps) {
     short buffer[16000];
     auto i = embrolho_read_mbrola(brola, buffer, smps);
