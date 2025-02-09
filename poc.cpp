@@ -1,5 +1,4 @@
-#pragma leco tool
-#pragma leco add_impl api
+#pragma leco app
 import print;
 import siaudio;
 

@@ -1,5 +1,10 @@
+// Requires voice from https://github.com/numediart/MBROLA-voices.git
+// Not adding as a submodule due to repo size (even with depth=1)
+#pragma leco add_resource "en1"
+#pragma leco add_impl api
 export module embrolho;
 import hai;
+import sires;
 
 namespace embrolho::handles {
   struct db;
@@ -12,7 +17,7 @@ namespace embrolho::handles {
 extern "C" {
   using namespace embrolho::handles;
 
-  db * embrolho_init_db();
+  db * embrolho_init_db(const char *);
   fifo * embrolho_init_fifo();
   input * embrolho_init_input(fifo *);
   parser * embrolho_init_parserinput(input *, db *);
@@ -44,7 +49,8 @@ namespace embrolho {
 
   export class t {
     [[nodiscard]] static handles::db * init_db() {
-      auto res = embrolho_init_db();
+      auto path = sires::real_path_name("en1");
+      auto res = embrolho_init_db(path.begin());
       if (!res) throw error {};
       return res;
     }

@@ -23,8 +23,8 @@ static void close_i(Input * in) {
   MBR_free(in);
 }
 
-Database * embrolho_init_db() {
-  return init_rename_Database("en1", NULL, NULL);
+Database * embrolho_init_db(char * dbf) {
+  return init_Database(dbf);
 }
 Fifo * embrolho_init_fifo() {
   return init_Fifo(FIFO_SIZE);
